@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+    <head>
+        <meta charset="UTF-8" />
+        <title>Imobiliária</title>
+        <link rel="stylesheet" href="css/styles.css">
+    </head>
+
+    <body>
+        <header class="header">
+            <div class="logo">
+                <img src="images/Logo.png">
+            </div>
+
+            <div class="header-info">
+                <div class="menu">
+                    <p>Início</p>
+                    <p>Sobre</p>
+                    <p>Contato</p>
+                    <button class="add" id="add" onclick="addData()">Novo</button>
+                </div>
+    
+                <div class="contato">
+                    <img src="images/Group 2.png">
+                    <p>+55 (21)xxxx-xxxx</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="main">
+
+            <div class="search-main">
+
+                <div class="search-div">
+                    <section class="form-size">
+                        <div class="type">
+                            <select name="comprar-alugar" id="modalidade">
+                                <option value="todos">Selecionar</option>
+                                <option value="compra">Comprar</option>
+                                <option value="alugar">Aluguel</option>
+                            </select>
+                        </div>
+                        <form class="search-form">
+                            <input type="text" placeholder="Localização do imóvel" id="local">
+                        </form>
+                    </section>
+                </div>
+
+                <div class="filter-div">
+                    <div class="filter-size">
+                        <select class="filter-imovel" id="tipo_de_imovel">
+                            <option>Tipo de imóvel</option>
+                        </select>
+                        <select class="filter-banheiros" id="numero_de_banheiros">
+                            <option>Banheiros</option>
+                        </select>
+                        <select class="filter-quartos" id="numero_de_quartos">
+                            <option>Quartos</option>
+                        </select>
+                        <button class="buscar" id="buscar_imovel" onclick="newData()">Add</button>
+                    </div>
+                </div>
+
+                <div class="more-filter">
+                    <div class="more-info">
+                        <a id="mais_filtros" href="" target="_blank">Mais filtros</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info">
+                <div class="info-size">
+                    <h2>Resultados da Busca</h2>
+                    <p>(x) imóveis encontrados</p>
+                </div>
+            </div>
+
+            <div class="imoveis">
+
+                <div class="imoveis-size" id="imoveis_html">
+                    
+                    <!--Vindo do JS-->
+
+                </div>
+
+                <div class="janela-modal" id="janela-modal" >
+                    <div class="modal" id="modal">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div> 
+        <!--Fim Main-->
+
+        <footer class="footer">
+            <div>
+                <p>Nome da Empresa</p>
+                <p>CNPJ</p>
+            </div>
+        </footer>
+        <script src="js/script.js"></script>
+    </body>
+</html>
