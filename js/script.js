@@ -59,12 +59,23 @@ localStorage.setItem("dados", JSON.stringify(dados));
 
 //Deletar dados
 
-console.log(dados)
+function loadData () {
+    const dadosString = localStorage.getItem("dados");
+    dados = dadosString ? JSON.parse(dadosString):[];
+}
+
+function saveData () {
+    localStorage.setItem("dados", JSON.stringify(dados));
+}
 
 function btn_delete (id) {
+    loadData()
+
     const dado_delete = dados.findIndex(index => index.id == id);
     
     dados.splice(dado_delete, 1);
+
+    saveData()
 
     load();
 }
@@ -72,8 +83,7 @@ function btn_delete (id) {
 //Carregar imóveis na página
 
 function load () {
-    const dadosString = localStorage.getItem("dados");
-    dados = dadosString ? JSON.parse(dadosString):[];
+    loadData()
 
     const html = (Array.isArray(dados) && dados.length > 0) && dados.map(index => 
         `
@@ -192,29 +202,34 @@ function load_info (dado) {
 
     document.getElementById("modal").innerHTML = html
     
-    
-
 }
-
-//onclick="submit_info(${index.id})"
 
 //Editar dados do imóvel
 
 function submit_info(dado) {
 
-    //let dado_info = dados.findIndex(index => index.id == id);
-    let titulo = document.getElementById("edit_title").value
+    let title = document.getElementById("edit_title").value
+    let price = document.getElementById("edit_price").value
+    let type = document.getElementById("edit_modalidade").value
+    let description = document.getElementById("edit_desc").value
+    let editRoom = document.getElementById("edit_room").value
+    let editBath = document.getElementById("edit_bath").value
     
 
     dados = dados.map(index => {
         if(index.id == dado){
-            index.title = titulo
+            index.title = title,
+            index.price = price,
+            index.type = type,
+            index.description = description,
+            index.edit_room = editRoom,
+            index.edit_bath = editBath
         }
         return index
     })
 
     console.log(dados)
-    localStorage.setItem("dados", JSON.stringify(dados));
+    saveData()
     close_modal()
 
     load(dados)
@@ -235,27 +250,119 @@ function close_modal () {
 //Adicionar imoveis
 
 function newData () {
-    const dadosString = localStorage.getItem("dados");
-    dados = dadosString ? JSON.parse(dadosString) : [];
+    loadData()
 
     const dado =  {
+        id: dados.length + 1,
         title: `Imovel ${dados.length + 1}`,
         description: `Descricao ${dados.length + 1}`,
         price: gerarValorMonetario(),
         bath_count: 1,
         room_count: 1,
-        type: "Aluguel"
+        type: "Aluguel",
     };
 
     dados = dados.concat(dado);
 
-    localStorage.setItem("dados", JSON.stringify(dados));
-
-    load()
+    saveData()
+    return dado.id
+    //load()
 }
 
-function addData () {
+//Novo Registro
+function newItem () {
+    loadData()
+    const modal = document.getElementById('janela-modal')
+    modal.classList.add('abrir')
+
+    const novo = newData()
+
+    console.log("Teste "+novo)
+    
+    const registerData = dados.filter(({id}) => id == novo)
+    
+
+    const html = registerData.map(index => 
+        `
+            <h1>Cadastrar novo imóvel</h1>
+
+            <div class="edit-form">
+                <label>Título</label>
+                <input type="text" "id="new_title" value="${index.title}">
+            </div>
+
+            <div class="edit-form">
+                <label>Valor</label>
+                <input type="text" id="new_price" value="${index.price}" placeholder="Inserir valor do imóvel.">
+            </div>
+
+            <div class="edit-form">
+                <label>Modalidade</label>
+                <input type="text" id="new_modalidade" value="${index.type}" placeholder="Aluguel ou Compra?">
+            </div>
+
+            <div class="edit-form">
+                <label>Descrição do imóvel</label>
+                <input type="text" id="new_desc" value="${index.description}" placeholder="Uma breve descrição do imóvel.">
+            </div>
+
+            <div class="edit-form">
+                <label>Quartos</label>
+                <input type="text" id="new_room" value="${index.room_count}" placeholder="Número de quartos.">
+            </div>
+
+            <div class="edit-form">
+                <label>Banheiros</label>
+                <input type="text" id="new_bath" value="${index.bath_count}" placeholder="Número de banheiros.">
+            </div>
+
+            <div class="edit-button">
+                <button class="close" id="close" onclick="close_modal(${index.id})">Cancelar</button>
+                <button type="submit" id="edit" onclick="addData(${index.id})">Cadastrar</button>
+            </div>
+        `
+    ).join("")
+
+    document.getElementById("modal").innerHTML = html
+
+    saveData()
+}
+
+
+
+function addData (id) {
+
+    loadData()
     console.log("Ok")
+    console.log(dados.id)
+
+    const novo = id
+    let registerData = dados.filter(({id}) => id == novo)
+
+    console.log("Objeto: " + registerData)
+
+
+    let title = document.getElementById("new_title").value
+    let price = document.getElementById("new_price").value
+    let type = document.getElementById("new_modalidade").value
+    let description = document.getElementById("new_desc").value
+    let room = document.getElementById("new_room").value
+    let bath = document.getElementById("new_bath").value
+    
+    console.log("#1 " + title)
+    
+    dados = dados.map(index => {
+        if(index.id == id){
+            index.title = title,
+            index.price = price,
+            index.type = type,
+            index.description = description,
+            index.new_room = editRoom,
+            index.new_bath = editBath
+        }
+        return index
+
+    })
 }
 
 function gerarValorMonetario() {
