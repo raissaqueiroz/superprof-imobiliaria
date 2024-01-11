@@ -51,20 +51,19 @@ let dados = [
         price: 400000,
         bath_count: 2,
         room_count: 2,
-        type: "Venda",
+        type: "Compra",
         id: 6
     }
 ]
 localStorage.setItem("dados", JSON.stringify(dados));
 
 //Deletar dados
-
 function loadData () {
     const dadosString = localStorage.getItem("dados");
     dados = dadosString ? JSON.parse(dadosString):[];
 }
 
-function saveData () {
+function saveData (dados) {
     localStorage.setItem("dados", JSON.stringify(dados));
 }
 
@@ -81,7 +80,6 @@ function btn_delete (id) {
 }
 
 //Carregar imóveis na página
-
 function load () {
     loadData()
 
@@ -130,13 +128,11 @@ function load () {
 }
 
 //Carregar junto a página
-
 document.addEventListener('DOMContentLoaded', () => {
     load();
 })
 
 //Editar-Modal
-
 function edit_info (id) {
 
     let dado_info = dados.findIndex(index => index.id == id);
@@ -150,7 +146,6 @@ function edit_info (id) {
 }
 
 //Carregar informação na janela modal
-
 function load_info (dado) {
 
     const modal = document.getElementById('janela-modal')
@@ -160,7 +155,7 @@ function load_info (dado) {
 
     const html = dados_id.map(index =>
         `
-            <button class="close" id="close" onclick="close_modal()">X</button>
+
             <h1>Editar informações</h1>
 
             <div class="edit-form">
@@ -194,6 +189,7 @@ function load_info (dado) {
             </div>
 
             <div class="edit-button">
+                <button class="close" id="close" onclick="close_modal()">Cancelar</button>
                 <button type="submit" id="edit" onclick="submit_info(${index.id})">Alterar</button>
             </div>
         `
@@ -204,8 +200,66 @@ function load_info (dado) {
     
 }
 
-//Editar dados do imóvel
+//Botão de procura
+function searchLocal() {
+    loadData()
+    const option = document.getElementById("modalidade")
+    const searchButton = document.getElementById("searchButton")
+    
+    let dadoType = dados.filter(index => index.type.toLowerCase() == option.value.toLowerCase());
+    console.log(dadoType)
+    
+    if(dadoType.length > 0) {
+        html = dadoType.map(index =>
+            `
+                <div class="imoveis-info">
+                    <div class="picture">
+            
+                    </div>
+            
+                    <div class="imovel-desc-size">
+                        <div class="imovel-desc">
+                            <div class="imovel-nome-valor">
+                                <div>
+                                    <h4 id="nome_imovel">${index.title}</h6>
+                                    <p id="valor">R$ ${index.price}</p>
+                                </div>
+                                <div class="status">
+                                    <label id="modalidade">${index.type}</label>
+                                </div>
+                            </div>
+                            
+                            <div class="imovel-desc-label">
+                                <p id="imovel_desc">${index.description}</p>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <div class="imovel-icons">
+                        <img src="images/bed-solid 1.png" alt="Quartos">
+                        <p id="numero_de_quartos">${index.room_count}</p>
+                        <img src="images/bath-solid 1.png" alt="Banheiros">
+                        <p id="numero_de_banheiros">${index.bath_count}</p>
+                    </div>
+            
+                    <div class="details">
+                        <button id="editar" onclick="edit_info(${index.id})">Editar</button>
+                        <button id="excluir" onclick="btn_delete(${index.id})">Excluir</button>
+                        <button id="detalhes" onclick="show_details(${index.id})">Detalhes</button>
+                    </div>
+                </div>
+            `
+        ).join("")
+            
+        document.getElementById("imoveis_html").innerHTML = html
+        saveData()
+    }else{
+        saveData()
+        load()
+    }
+}
 
+//Editar dados do imóvel
 function submit_info(dado) {
 
     let title = document.getElementById("edit_title").value
@@ -235,20 +289,13 @@ function submit_info(dado) {
     load(dados)
 }
 
-
-
 //Fechar Modal
-
 function close_modal () {
     const close_btn = document.getElementById("janela-modal")
     close_btn.classList.toggle("abrir")
 }
 
-
-
-
 //Adicionar imoveis
-
 function newData () {
     loadData()
 
@@ -265,8 +312,7 @@ function newData () {
     dados = dados.concat(dado);
 
     saveData()
-    return dado.id
-    //load()
+    return dado
 }
 
 //Novo Registro
@@ -277,92 +323,91 @@ function newItem () {
 
     const novo = newData()
 
-    console.log("Teste "+novo)
+    console.log("Teste "+novo.title)
     
-    const registerData = dados.filter(({id}) => id == novo)
-    
-
-    const html = registerData.map(index => 
+    const html = 
         `
             <h1>Cadastrar novo imóvel</h1>
 
             <div class="edit-form">
                 <label>Título</label>
-                <input type="text" "id="new_title" value="${index.title}">
+                <input type="text" id="new_title" value="${novo.title}">
             </div>
 
             <div class="edit-form">
                 <label>Valor</label>
-                <input type="text" id="new_price" value="${index.price}" placeholder="Inserir valor do imóvel.">
+                <input type="text" id="new_price" value="${novo.price}" placeholder="Inserir valor do imóvel.">
             </div>
 
             <div class="edit-form">
                 <label>Modalidade</label>
-                <input type="text" id="new_modalidade" value="${index.type}" placeholder="Aluguel ou Compra?">
+                <input type="text" id="new_modalidade" value="${novo.type}" placeholder="Aluguel ou Compra?">
             </div>
 
             <div class="edit-form">
                 <label>Descrição do imóvel</label>
-                <input type="text" id="new_desc" value="${index.description}" placeholder="Uma breve descrição do imóvel.">
+                <input type="text" id="new_desc" value="${novo.description}" placeholder="Uma breve descrição do imóvel.">
             </div>
 
             <div class="edit-form">
                 <label>Quartos</label>
-                <input type="text" id="new_room" value="${index.room_count}" placeholder="Número de quartos.">
+                <input type="text" id="new_room" value="${novo.room_count}" placeholder="Número de quartos.">
             </div>
 
             <div class="edit-form">
                 <label>Banheiros</label>
-                <input type="text" id="new_bath" value="${index.bath_count}" placeholder="Número de banheiros.">
+                <input type="text" id="new_bath" value="${novo.bath_count}" placeholder="Número de banheiros.">
             </div>
 
             <div class="edit-button">
-                <button class="close" id="close" onclick="close_modal(${index.id})">Cancelar</button>
-                <button type="submit" id="edit" onclick="addData(${index.id})">Cadastrar</button>
+                <button class="close" id="close" onclick="closeDelete(${novo.id})">Cancelar</button>
+                <button id="add" onclick="addData(${novo.id})">Cadastrar</button>
             </div>
         `
-    ).join("")
 
     document.getElementById("modal").innerHTML = html
 
     saveData()
 }
 
-
-
-function addData (id) {
+function closeDelete(id) {
+    const close_btn = document.getElementById("janela-modal")
+    close_btn.classList.toggle("abrir")
 
     loadData()
-    console.log("Ok")
-    console.log(dados.id)
 
-    const novo = id
-    let registerData = dados.filter(({id}) => id == novo)
+    const dado_delete = dados.findIndex(index => index.id == id);
+    
+    dados.splice(dado_delete, 1);
 
-    console.log("Objeto: " + registerData)
+    saveData()
 
+    load();
+}
 
+//Metodo salva imoveis no banco de dados.
+async function addData(id) {
     let title = document.getElementById("new_title").value
     let price = document.getElementById("new_price").value
     let type = document.getElementById("new_modalidade").value
     let description = document.getElementById("new_desc").value
-    let room = document.getElementById("new_room").value
-    let bath = document.getElementById("new_bath").value
-    
-    console.log("#1 " + title)
-    
-    dados = dados.map(index => {
-        if(index.id == id){
-            index.title = title,
-            index.price = price,
-            index.type = type,
-            index.description = description,
-            index.new_room = editRoom,
-            index.new_bath = editBath
-        }
-        return index
+    let new_room = document.getElementById("new_room").value
+    let new_bath = document.getElementById("new_bath").value
 
-    })
+    const data = {
+        title,
+        price,
+        type,
+        description,
+        newRoom: new_room,
+        newBath: new_bath
+    }
+    console.log(data)
+
+    await createPropertie(data)
+
+    close_modal ()
+    //load()
 }
 
 function gerarValorMonetario() {
