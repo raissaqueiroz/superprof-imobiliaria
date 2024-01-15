@@ -57,30 +57,20 @@ let dados = [
 ]
 localStorage.setItem("dados", JSON.stringify(dados));
 
-//Deletar dados
+
 function loadData () {
     const dadosString = localStorage.getItem("dados");
-    dados = dadosString ? JSON.parse(dadosString):[];
+    let dados = dadosString != "undefined" ? JSON.parse(dadosString) : [];
+    return dados;
 }
 
 function saveData (dados) {
     localStorage.setItem("dados", JSON.stringify(dados));
 }
 
-function btn_delete (id) {
-    loadData()
-
-    const dado_delete = dados.findIndex(index => index.id == id);
-    
-    dados.splice(dado_delete, 1);
-
-    saveData()
-
-    load();
-}
-
-//Carregar imóveis na página
-function load () {
+//Screens scripts
+//{id, title, price, description, room_count, bath_count}, passar objeto como parâmetro, gerar apenas o html.
+function loadMainScreen() {
     loadData()
 
     const html = (Array.isArray(dados) && dados.length > 0) && dados.map(index => 
@@ -116,9 +106,9 @@ function load () {
                 </div>
         
                 <div class="details">
-                    <button id="editar" onclick="edit_info(${index.id})">Editar</button>
-                    <button id="excluir" onclick="btn_delete(${index.id})">Excluir</button>
-                    <button id="detalhes" onclick="show_details(${index.id})">Detalhes</button>
+                    <button id="editar" onclick="btnEditInfo(${index.id})">Editar</button>
+                    <button id="excluir" onclick="btnDelete(${index.id})">Excluir</button>
+                    <button id="detalhes" onclick="showPropertyDetails(${index.id})">Detalhes</button>
                 </div>
             </div>
         `).join("")
@@ -127,33 +117,9 @@ function load () {
 
 }
 
-//Carregar junto a página
-document.addEventListener('DOMContentLoaded', () => {
-    load();
-})
+function editModalScreen(dataId) {
 
-//Editar-Modal
-function edit_info (id) {
-
-    let dado_info = dados.findIndex(index => index.id == id);
-
-    if (dado_info < id) {
-       let dif = id - dado_info
-       dado_info += dif
-       load_info(dado_info);
-    }
-
-}
-
-//Carregar informação na janela modal
-function load_info (dado) {
-
-    const modal = document.getElementById('janela-modal')
-    modal.classList.add('abrir')
-
-    const dados_id = dados.filter(({id}) => id == dado)
-
-    const html = dados_id.map(index =>
+    const html = dataId.map(index =>
         `
 
             <h1>Editar informações</h1>
@@ -189,78 +155,166 @@ function load_info (dado) {
             </div>
 
             <div class="edit-button">
-                <button class="close" id="close" onclick="close_modal()">Cancelar</button>
-                <button type="submit" id="edit" onclick="submit_info(${index.id})">Alterar</button>
+                <button class="close" id="close" onclick="btnCloseModal()">Cancelar</button>
+                <button type="submit" id="edit" onclick="submitEditedInfo(${index.id})">Alterar</button>
             </div>
         `
 
     ).join("")
 
     document.getElementById("modal").innerHTML = html
-    
 }
 
-//Botão de procura
-function searchLocal() {
+function searchScreen(dataType) {
+    html = dataType.map(index =>
+        `
+            <div class="imoveis-info">
+                <div class="picture">
+        
+                </div>
+        
+                <div class="imovel-desc-size">
+                    <div class="imovel-desc">
+                        <div class="imovel-nome-valor">
+                            <div>
+                                <h4 id="nome_imovel">${index.title}</h6>
+                                <p id="valor">R$ ${index.price}</p>
+                            </div>
+                            <div class="status">
+                                <label id="modalidade">${index.type}</label>
+                            </div>
+                        </div>
+                        
+                        <div class="imovel-desc-label">
+                            <p id="imovel_desc">${index.description}</p>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="imovel-icons">
+                    <img src="images/bed-solid 1.png" alt="Quartos">
+                    <p id="numero_de_quartos">${index.room_count}</p>
+                    <img src="images/bath-solid 1.png" alt="Banheiros">
+                    <p id="numero_de_banheiros">${index.bath_count}</p>
+                </div>
+        
+                <div class="details">
+                    <button id="editar" onclick="edit_info(${index.id})">Editar</button>
+                    <button id="excluir" onclick="btnDelete(${index.id})">Excluir</button>
+                    <button id="detalhes" onclick="show_details(${index.id})">Detalhes</button>
+                </div>
+            </div>
+        `
+    ).join("")
+    document.getElementById("imoveis_html").innerHTML = html
+}
+
+function registerProperty(newInfo) {
+    const html = 
+        `
+            <h1>Cadastrar novo imóvel</h1>
+
+            <div class="edit-form">
+                <label>Título</label>
+                <input type="text" id="new_title" placeholder="Inserir Título do imóvel.">
+            </div>
+
+            <div class="edit-form">
+                <label>Valor</label>
+                <input type="text" id="new_price" placeholder="Inserir valor do imóvel.">
+            </div>
+
+            <div class="edit-form">
+                <label>Modalidade</label>
+                <input type="text" id="new_modalidade" placeholder="Aluguel ou Compra?">
+            </div>
+
+            <div class="edit-form">
+                <label>Descrição do imóvel</label>
+                <input type="text" id="new_desc" placeholder="Uma breve descrição do imóvel.">
+            </div>
+
+            <div class="edit-form">
+                <label>Quartos</label>
+                <input type="text" id="new_room" placeholder="Número de quartos.">
+            </div>
+
+            <div class="edit-form">
+                <label>Banheiros</label>
+                <input type="text" id="new_bath" placeholder="Número de banheiros.">
+            </div>
+
+            <div class="edit-button">
+                <button class="close" id="close" onclick="btnCloseAndDelete(${newInfo.id})">Cancelar</button>
+                <button id="add" onclick="addData(${newInfo.id})">Cadastrar</button>
+            </div>
+        `
+
+    document.getElementById("modal").innerHTML = html
+}
+
+function loadModalEditScreen(dado) {
+
+    const modal = document.getElementById('janela-modal')
+    modal.classList.add('abrir')
+
+    const dataId = dados.filter(({id}) => id == dado)
+
+    editModalScreen(dataId)
+}
+
+function showPropertyDetails() {
+    console.log("Detalhes")
+}
+
+//On load event
+document.addEventListener('DOMContentLoaded', () => {
+    loadMainScreen();
+})
+
+//Buttons
+function btnDelete(id) {
+    loadData()
+
+    const dado_delete = dados.findIndex(index => index.id == id);
+    
+    dados.splice(dado_delete, 1);
+
+    saveData()
+
+    loadMainScreen()
+}
+
+function btnEditInfo(id) {
+
+    let dado_info = dados.findIndex(index => index.id == id);
+
+    if (dado_info < id) {
+       let dif = id - dado_info
+       dado_info += dif
+       loadModalEditScreen(dado_info);
+    }
+
+}
+
+function btnSearchInfo() {
     loadData()
     const option = document.getElementById("modalidade")
     const searchButton = document.getElementById("searchButton")
     
-    let dadoType = dados.filter(index => index.type.toLowerCase() == option.value.toLowerCase());
-    console.log(dadoType)
+    let dataType = dados.filter(index => index.type.toLowerCase() == option.value.toLowerCase());
+    console.log(dataType)
     
-    if(dadoType.length > 0) {
-        html = dadoType.map(index =>
-            `
-                <div class="imoveis-info">
-                    <div class="picture">
-            
-                    </div>
-            
-                    <div class="imovel-desc-size">
-                        <div class="imovel-desc">
-                            <div class="imovel-nome-valor">
-                                <div>
-                                    <h4 id="nome_imovel">${index.title}</h6>
-                                    <p id="valor">R$ ${index.price}</p>
-                                </div>
-                                <div class="status">
-                                    <label id="modalidade">${index.type}</label>
-                                </div>
-                            </div>
-                            
-                            <div class="imovel-desc-label">
-                                <p id="imovel_desc">${index.description}</p>
-                            </div>
-                        </div>
-                    </div>
-            
-                    <div class="imovel-icons">
-                        <img src="images/bed-solid 1.png" alt="Quartos">
-                        <p id="numero_de_quartos">${index.room_count}</p>
-                        <img src="images/bath-solid 1.png" alt="Banheiros">
-                        <p id="numero_de_banheiros">${index.bath_count}</p>
-                    </div>
-            
-                    <div class="details">
-                        <button id="editar" onclick="edit_info(${index.id})">Editar</button>
-                        <button id="excluir" onclick="btn_delete(${index.id})">Excluir</button>
-                        <button id="detalhes" onclick="show_details(${index.id})">Detalhes</button>
-                    </div>
-                </div>
-            `
-        ).join("")
-            
-        document.getElementById("imoveis_html").innerHTML = html
+    if(dataType.length > 0) {
+        searchScreen(dataType)
         saveData()
     }else{
         saveData()
-        load()
+        loadMainScreen()
     }
 }
 
-//Editar dados do imóvel
-function submit_info(dado) {
+function submitEditedInfo(dado) {
 
     let title = document.getElementById("edit_title").value
     let price = document.getElementById("edit_price").value
@@ -284,19 +338,17 @@ function submit_info(dado) {
 
     console.log(dados)
     saveData()
-    close_modal()
+    btnCloseModal()
 
-    load(dados)
+    loadMainScreen(dados)
 }
 
-//Fechar Modal
-function close_modal () {
+function btnCloseModal () {
     const close_btn = document.getElementById("janela-modal")
     close_btn.classList.toggle("abrir")
 }
 
-//Adicionar imoveis
-function newData () {
+function generateNewProperty() {
     loadData()
 
     const dado =  {
@@ -315,62 +367,21 @@ function newData () {
     return dado
 }
 
-//Novo Registro
-function newItem () {
+function btnNewProperty() {
     loadData()
     const modal = document.getElementById('janela-modal')
     modal.classList.add('abrir')
 
-    const novo = newData()
+    const newInfo = generateNewProperty()
 
-    console.log("Teste "+novo.title)
+    console.log("Teste "+newInfo.title)
     
-    const html = 
-        `
-            <h1>Cadastrar novo imóvel</h1>
-
-            <div class="edit-form">
-                <label>Título</label>
-                <input type="text" id="new_title" value="${novo.title}">
-            </div>
-
-            <div class="edit-form">
-                <label>Valor</label>
-                <input type="text" id="new_price" value="${novo.price}" placeholder="Inserir valor do imóvel.">
-            </div>
-
-            <div class="edit-form">
-                <label>Modalidade</label>
-                <input type="text" id="new_modalidade" value="${novo.type}" placeholder="Aluguel ou Compra?">
-            </div>
-
-            <div class="edit-form">
-                <label>Descrição do imóvel</label>
-                <input type="text" id="new_desc" value="${novo.description}" placeholder="Uma breve descrição do imóvel.">
-            </div>
-
-            <div class="edit-form">
-                <label>Quartos</label>
-                <input type="text" id="new_room" value="${novo.room_count}" placeholder="Número de quartos.">
-            </div>
-
-            <div class="edit-form">
-                <label>Banheiros</label>
-                <input type="text" id="new_bath" value="${novo.bath_count}" placeholder="Número de banheiros.">
-            </div>
-
-            <div class="edit-button">
-                <button class="close" id="close" onclick="closeDelete(${novo.id})">Cancelar</button>
-                <button id="add" onclick="addData(${novo.id})">Cadastrar</button>
-            </div>
-        `
-
-    document.getElementById("modal").innerHTML = html
+    registerProperty(newInfo)
 
     saveData()
 }
 
-function closeDelete(id) {
+function btnCloseAndDelete(id) {
     const close_btn = document.getElementById("janela-modal")
     close_btn.classList.toggle("abrir")
 
@@ -382,7 +393,7 @@ function closeDelete(id) {
 
     saveData()
 
-    load();
+    loadMainScreen()
 }
 
 //Metodo salva imoveis no banco de dados.
@@ -406,10 +417,11 @@ async function addData(id) {
 
     await createPropertie(data)
 
-    close_modal ()
+    btnCloseModal ()
     //load()
 }
 
+//Generate random numbers function
 function gerarValorMonetario() {
     // Gerar um número aleatório entre 1 e 100 (pode ajustar conforme necessário)
     let valor = Math.floor(Math.random() * 100) + 1;
@@ -418,8 +430,4 @@ function gerarValorMonetario() {
     let valorMonetario = `${valor.toFixed(2)}`;
 
     return valorMonetario;
-}
-
-function show_details () {
-    console.log("Detalhes")
 }

@@ -19,7 +19,7 @@
                     <p>Início</p>
                     <p>Sobre</p>
                     <p>Contato</p>
-                    <button class="add" id="add" onclick="newItem()">Novo</button>
+                    <button class="add" id="add" onclick="btnNewProperty()">Novo</button>
                 </div>
     
                 <div class="contato">
@@ -36,7 +36,7 @@
                 <div class="search-div">
                     <section class="form-size">
                         <div class="type">
-                            <select name="comprar-alugar" id="modalidade" onchange="searchLocal()">
+                            <select name="comprar-alugar" id="modalidade" onchange="btnSearchInfo()">
                                 <option value="todos">Todos</option>
                                 <option value="compra">Comprar</option>
                                 <option value="aluguel">Aluguel</option>
@@ -45,7 +45,7 @@
                         <form class="search-form">
                             <input type="text" placeholder="Localização do imóvel" id="local">
                         </form>
-                        <button class="searchButton" id="searchButton" onclick="searchLocal()">Procurar</button>
+                        <button class="searchButton" id="searchButton" onclick="btnSearchInfo()">Procurar</button>
                     </section>
                 </div>
 
