@@ -19,7 +19,7 @@
                     <p>Início</p>
                     <p>Sobre</p>
                     <p>Contato</p>
-                    <button class="add" id="add" onclick="btnNewProperty()">Novo</button>
+                    <button class="add" id="add" onclick="btnOpenRegisterModal()">Novo</button>
                 </div>
     
                 <div class="contato">
@@ -88,7 +88,42 @@
 
                 <div class="janela-modal" id="janela-modal" >
                     <div class="modal" id="modal">
+                        <h1 id="title-form">Cadastrar Imóvel</h1>
 
+                        <div class="edit-form">
+                            <label>Título</label>
+                            <input type="text" id="new_title" placeholder="Inserir Título do imóvel.">
+                        </div>
+
+                        <div class="edit-form">
+                            <label>Valor</label>
+                            <input type="text" id="new_price" placeholder="Inserir valor do imóvel.">
+                        </div>
+
+                        <div class="edit-form">
+                            <label>Modalidade</label>
+                            <input type="text" id="new_modalidade" placeholder="Aluguel ou Compra?">
+                        </div>
+
+                        <div class="edit-form">
+                            <label>Descrição do imóvel</label>
+                            <input type="text" id="new_desc" placeholder="Uma breve descrição do imóvel.">
+                        </div>
+
+                        <div class="edit-form">
+                            <label>Quartos</label>
+                            <input type="number" id="new_room" placeholder="Número de quartos.">
+                        </div>
+
+                        <div class="edit-form">
+                            <label>Banheiros</label>
+                            <input type="number" id="new_bath" placeholder="Número de banheiros.">
+                        </div>
+
+                        <div class="edit-button">
+                            <button class="close" id="close" onclick="btnCloseModal()">Cancelar</button>
+                            <button id="btn-form">Cadastrar</button>
+                        </div>
                     </div>
 
                 </div>
